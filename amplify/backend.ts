@@ -23,7 +23,7 @@ const backend = defineBackend({
 
 // ========== Cognito Managed Login Domain ==========
 // El dominio 'ad-studios' ya fue creado manualmente en la consola de AWS Cognito
-const cognitoDomainUrl = 'https://ad-studios.auth.us-east-1.amazoncognito.com';
+const cognitoDomainUrl = 'https://adstudios.auth.us-east-1.amazoncognito.com';
 
 // Configurar el cliente para OAuth con Managed Login
 const cfnUserPoolClient = backend.auth.resources.cfnResources.cfnUserPoolClient;
