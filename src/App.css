@@ -1,42 +1,82 @@
+/* Forzar modo claro para toda la aplicación */
+* {
+  color-scheme: light !important;
+}
+
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  text-align: left;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* Asegurar colores de texto correctos */
+h1, h2, h3, h4, h5, h6 {
+  color: #212529 !important;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+p, span, div, label {
+  color: inherit;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+/* Estilos para contenedores blancos */
+.card,
+[style*="backgroundColor: '#fff'"],
+[style*="backgroundColor: #fff"] {
+  color: #212529;
 }
 
-.card {
-  padding: 2em;
+/* Estilos para inputs */
+input, select, textarea {
+  background-color: #ffffff !important;
+  color: #212529 !important;
+  border-color: #dee2e6 !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #6c757d !important;
+}
+
+/* Estilos para tablas */
+table {
+  color: #212529;
+}
+
+th, td {
+  color: #212529;
+}
+
+/* Estilos para modales */
+[style*="position: fixed"] {
+  color: #212529;
+}
+
+/* Texto secundario */
+.text-muted,
+[style*="color: '#666'"],
+[style*="color: #666"],
+[style*="color: '#888'"],
+[style*="color: #888"] {
+  color: #495057 !important;
 }
 
 .read-the-docs {
-  color: #888;
+  color: #495057;
+}
+
+/* Estilos para details/summary */
+details {
+  color: #212529;
+}
+
+summary {
+  color: #3498db;
+  cursor: pointer;
+}
+
+/* Pre y code blocks */
+pre, code {
+  background-color: #f8f9fa !important;
+  color: #212529 !important;
 }
