@@ -32,6 +32,20 @@ export interface VacationRequest {
     resolvedAt?: string;
 }
 
+export interface VacationBalance {
+    id: string;
+    userId: string;
+    userEmail: string;
+    userName: string;
+    totalDays: number;
+    usedDays: number;
+    pendingDays: number;
+    availableDays: number;
+    year: number;
+    lastUpdated: string;
+    updatedBy: string;
+}
+
 export interface CreateVacationRequestInput {
     startDate: string;
     endDate: string;
