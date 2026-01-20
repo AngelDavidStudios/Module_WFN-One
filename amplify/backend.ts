@@ -23,7 +23,7 @@ const backend = defineBackend({
 
 // ========== Cognito Managed Login Domain ==========
 // El dominio 'ad-studios' ya fue creado manualmente en la consola de AWS Cognito
-const cognitoDomainUrl = 'https://ad-studios.auth.us-east-1.amazoncognito.com';
+const cognitoDomainUrl = 'https://adstudios.auth.us-east-1.amazoncognito.com';
 
 // Configurar el cliente para OAuth con Managed Login
 const cfnUserPoolClient = backend.auth.resources.cfnResources.cfnUserPoolClient;
@@ -32,10 +32,13 @@ const cfnUserPoolClient = backend.auth.resources.cfnResources.cfnUserPoolClient;
 cfnUserPoolClient.callbackUrLs = [
   'http://localhost:5173/',
   'http://localhost:5173/dashboard',
+  'https://main.d11fp1mp9lptcl.amplifyapp.com/',
+  'https://main.d11fp1mp9lptcl.amplifyapp.com/dashboard'
 ];
 
 cfnUserPoolClient.logoutUrLs = [
   'http://localhost:5173/',
+  'https://main.d11fp1mp9lptcl.amplifyapp.com/'
 ];
 
 // Habilitar OAuth para el cliente
