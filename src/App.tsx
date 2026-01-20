@@ -36,7 +36,7 @@ const configureAmplify = () => {
     const config = JSON.parse(JSON.stringify(outputs));
 
     // Usar variables de entorno para la configuración de OAuth
-    const cognitoDomain = import.meta.env.VITE_COGNITO_DOMAIN || 'ad-studios.auth.us-east-1.amazoncognito.com';
+    const cognitoDomain = import.meta.env.VITE_COGNITO_DOMAIN || 'adstudios.auth.us-east-1.amazoncognito.com';
     const redirectSignIn = import.meta.env.VITE_OAUTH_REDIRECT_SIGN_IN || 'http://localhost:5173/';
     const redirectSignOut = import.meta.env.VITE_OAUTH_REDIRECT_SIGN_OUT || 'http://localhost:5173/';
     const oauthScopes = import.meta.env.VITE_OAUTH_SCOPES?.split(',') || ['openid', 'email', 'profile'];
