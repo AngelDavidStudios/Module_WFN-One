@@ -11,9 +11,9 @@ onMounted(async () => {
   // Re-hidratamos el store y navegamos al dashboard.
   await session.load()
   if (session.isAuthenticated) {
-    router.replace({ name: 'dashboard' })
-  } else {
     router.replace({ name: 'home' })
+  } else {
+    router.replace({ name: 'login' })
   }
 })
 </script>
