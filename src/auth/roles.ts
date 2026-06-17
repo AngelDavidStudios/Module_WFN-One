@@ -7,7 +7,10 @@
 //   Managers       ->  admin
 //   Users          ->  user
 
-export type UserRole = 'super_admin' | 'admin' | 'user'
+import type { UserRole } from '../types/auth'
+
+export type { UserRole }
+export { hasAccess } from '../types/auth'
 
 const GROUP_TO_ROLE: Record<string, UserRole> = {
   Admins: 'super_admin',
@@ -22,14 +25,4 @@ export function rolesFromGroups(groups: string[] | undefined): UserRole[] {
     .map((g) => GROUP_TO_ROLE[g])
     .filter((r): r is UserRole => Boolean(r))
   return roles.length > 0 ? roles : ['user']
-}
-
-/** ¿El conjunto de roles cubre al menos uno de los requeridos? super_admin todo. */
-export function hasAccess(
-  userRoles: UserRole[],
-  requiredRoles: UserRole[],
-): boolean {
-  if (requiredRoles.length === 0) return true
-  if (userRoles.includes('super_admin')) return true
-  return userRoles.some((role) => requiredRoles.includes(role))
 }
