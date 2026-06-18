@@ -11,12 +11,14 @@ import { HttpClient, createHttpClient } from './httpClient'
  *   userManagement -> /users
  *   organization   -> /organization
  *   vacation       -> /vacation   (también sirve los logs de auditoría)
+ *   storage        -> /storage    (fotos de perfil; presigned URLs de S3)
  *
  * Estos paths son el contrato pendiente con el backend NestJS (último paso).
  */
 const userManagementClient = createHttpClient({ basePath: '/users' })
 const organizationClient = createHttpClient({ basePath: '/organization' })
 const vacationClient = createHttpClient({ basePath: '/vacation' })
+const storageClient = createHttpClient({ basePath: '/storage' })
 
 export const ApiFacade = {
   get userManagement(): HttpClient {
@@ -29,6 +31,10 @@ export const ApiFacade = {
 
   get vacation(): HttpClient {
     return vacationClient
+  },
+
+  get storage(): HttpClient {
+    return storageClient
   },
 }
 
