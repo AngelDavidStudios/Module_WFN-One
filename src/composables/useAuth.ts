@@ -18,8 +18,16 @@ export function useAuth() {
   const isAdmin = computed(() => session.isAdmin)
   const isSuperAdmin = computed(() => session.isSuperAdmin)
   const username = computed(() => session.user?.username ?? null)
+  // Nombre legible del usuario (claim `name`). Se prefiere al `username` para
+  // mostrar en UI: el username de un federado es `google_1128992…`.
+  const name = computed(() => session.user?.name ?? null)
   const email = computed(() => session.user?.email ?? null)
-  const userId = computed(() => session.user?.sub ?? null)
+  // Identidad canónica del módulo de vacaciones = Cognito username (no `sub`):
+  // es el mismo id con el que las vistas de admin guardan balances
+  // (`setBalance`) y nodos del árbol (`createNode`). Unificar aquí hace que
+  // solicitudes, balances, árbol y aprobaciones casen entre sí. El backend
+  // (VacationService.identityOf) usa la misma identidad.
+  const userId = computed(() => session.user?.username ?? null)
   const isLoading = computed(() => session.loading)
 
   const permissions = computed<RolePermissions>(() => {
@@ -43,6 +51,7 @@ export function useAuth() {
     isAdmin,
     isSuperAdmin,
     username,
+    name,
     email,
     userId,
     isLoading,

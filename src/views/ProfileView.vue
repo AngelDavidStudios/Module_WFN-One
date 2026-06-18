@@ -14,7 +14,7 @@ import {
 } from '../services/profilePictureService'
 import { UserAvatar } from '../components/ui'
 
-const { username, email, roles, userId } = useAuth()
+const { name, username, email, roles, userId } = useAuth()
 
 const profilePicture = ref<string | null>(null)
 const isUploadingPicture = ref(false)
@@ -30,7 +30,7 @@ const isLoading = ref(false)
 const message = ref<{ type: 'success' | 'error'; text: string } | null>(null)
 
 const displayName = computed(
-  () => username.value || email.value?.split('@')[0] || 'Usuario',
+  () => name.value || username.value || email.value?.split('@')[0] || 'Usuario',
 )
 
 const inputStyle: CSSProperties = {
@@ -374,7 +374,7 @@ function cancelChangePassword(): void {
           >
             <span style="color: #6b7280; font-size: 0.9rem">Nombre</span>
             <span style="color: #1f2937; font-weight: 600; font-size: 0.9rem">
-              {{ username || 'No disponible' }}
+              {{ name || username || 'No disponible' }}
             </span>
           </div>
 

@@ -3,6 +3,8 @@ import { api, API_BASE } from './client'
 export interface SessionUser {
   sub: string
   email?: string
+  // Nombre legible (claim `name`); se prefiere al `username` para mostrar en UI.
+  name?: string
   username?: string
   // Grupos Cognito tal cual los entrega el BFF: Admins | Managers | Users.
   groups: string[]

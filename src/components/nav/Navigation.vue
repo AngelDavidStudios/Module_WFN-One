@@ -28,14 +28,14 @@ import NavDropdown, { type DropdownItem } from './NavDropdown.vue'
 
 const route = useRoute()
 const session = useSessionStore()
-const { roles, isAdmin, isSuperAdmin, permissions, username, email, userId } =
+const { roles, isAdmin, isSuperAdmin, permissions, name, username, email, userId } =
   useAuth()
 
 const profilePicture = ref<string | null>(null)
 
 const isActive = (path: string): boolean => route.path === path
 const displayName = computed(
-  () => username.value || email.value?.split('@')[0] || 'Usuario',
+  () => name.value || username.value || email.value?.split('@')[0] || 'Usuario',
 )
 
 async function loadProfilePicture(): Promise<void> {
@@ -59,9 +59,10 @@ const empleadoItems = computed<DropdownItem[]>(() => {
   if (permissions.value.canCreateVacationRequest) {
     items.push({ to: '/vacations', icon: CalendarDaysIcon, label: 'Mis Vacaciones' })
   }
-  if (permissions.value.canApproveVacationRequests) {
-    items.push({ to: '/approvals', icon: CheckCircleIcon, label: 'Aprobaciones' })
-  }
+  // Cualquier usuario puede ser supervisor en el árbol y aprobar a sus
+  // subordinados (no depende del grupo Cognito). La vista se auto-filtra:
+  // si no tiene subordinados, la lista sale vacía.
+  items.push({ to: '/approvals', icon: CheckCircleIcon, label: 'Aprobaciones' })
   return items
 })
 

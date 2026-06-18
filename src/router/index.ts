@@ -52,8 +52,13 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/approvals',
     name: 'approvals',
+    // Sin requiredRoles: cualquier usuario puede ser supervisor en el árbol
+    // organizacional y aprobar las solicitudes de SUS subordinados (el backend
+    // lo permite por `supervisorId`, no por grupo Cognito). La vista se
+    // auto-filtra a las solicitudes donde el usuario es el supervisor asignado
+    // (vacía si no tiene subordinados).
     component: () => import('../views/vacation/PendingApprovalsView.vue'),
-    meta: { requiresAuth: true, requiredRoles: ['admin'] },
+    meta: { requiresAuth: true },
   },
   {
     path: '/organization',

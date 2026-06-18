@@ -30,7 +30,8 @@ interface DashboardStats {
   pendingApprovals: number
 }
 
-const { userId, username, email, roles, isAdmin, isSuperAdmin } = useAuth()
+const { userId, name, username, email, roles, isAdmin, isSuperAdmin } =
+  useAuth()
 
 const stats = ref<DashboardStats>({
   totalRequests: 0,
