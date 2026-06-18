@@ -137,7 +137,7 @@ const quickActions = computed<QuickAction[]>(() => {
 const infoRows = computed(() => {
   const rows = [
     { label: 'Email', value: email.value || '-' },
-    { label: 'Usuario', value: username.value || '-' },
+    { label: 'Usuario', value: name.value || username.value || '-' },
     { label: 'Roles', value: roles.value.join(', ') || 'Usuario' },
   ]
   if (supervisor.value) {
@@ -249,7 +249,7 @@ function onActionLeave(e: MouseEvent): void {
       "
     >
       <h1 style="font-size: 2rem; margin-bottom: 8px; color: #fff">
-        👋 ¡Hola, {{ username || email?.split('@')[0] }}!
+        👋 ¡Hola, {{ name || username || email?.split('@')[0] }}!
       </h1>
       <p style="color: rgba(255, 255, 255, 0.9); margin: 0">
         Rol: <strong>{{ roles.join(', ') || 'Usuario' }}</strong>
