@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# Env locales (el .env.example SÍ se versiona; VITE_API_URL se setea en Netlify)
+.env
+.env.*
+!.env.example
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
