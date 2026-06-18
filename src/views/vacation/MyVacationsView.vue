@@ -16,7 +16,7 @@ import {
   calculateDays,
 } from '../../types/vacation'
 
-const { userId, email, username } = useAuth()
+const { userId, name, email, username } = useAuth()
 
 const requests = ref<VacationRequest[]>([])
 const isLoading = ref(true)
@@ -103,7 +103,9 @@ async function handleCreateRequest(): Promise<void> {
     },
     userId.value,
     email.value,
-    username.value,
+    // userName legible para mostrar en "últimas solicitudes"/aprobaciones; se
+    // prefiere `name` sobre `username` (que en federados es `google_…`).
+    name.value || username.value,
   )
   isSubmitting.value = false
 

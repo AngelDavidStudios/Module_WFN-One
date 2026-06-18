@@ -25,7 +25,7 @@ interface DashboardStats {
   totalRequests: number
 }
 
-const { roles, username } = useAuth()
+const { roles, name, username } = useAuth()
 
 const stats = ref<DashboardStats>({
   totalUsers: 0,
@@ -164,7 +164,7 @@ function onAccessLeave(e: MouseEvent): void {
         👑 Panel de Super Administrador
       </h1>
       <p style="color: rgba(255, 255, 255, 0.9); margin: 0">
-        Bienvenido, <strong>{{ username }}</strong> • Rol:
+        Bienvenido, <strong>{{ name || username }}</strong> • Rol:
         <strong>{{ roles.join(', ') }}</strong>
       </p>
     </div>

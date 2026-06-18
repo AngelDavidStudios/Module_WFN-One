@@ -9,11 +9,19 @@ import { useAuth } from '../composables/useAuth'
 import { getProfilePictureUrl } from '../services'
 import { UserAvatar } from '../components/ui'
 
-const { roles, isAdmin, isSuperAdmin, permissions, username, email, userId } =
-  useAuth()
+const {
+  roles,
+  isAdmin,
+  isSuperAdmin,
+  permissions,
+  name,
+  username,
+  email,
+  userId,
+} = useAuth()
 
 const displayName = computed(
-  () => username.value || email.value?.split('@')[0] || 'Usuario',
+  () => name.value || username.value || email.value?.split('@')[0] || 'Usuario',
 )
 const profilePicture = ref<string | null>(null)
 
