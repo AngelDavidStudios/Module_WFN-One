@@ -1,0 +1,18 @@
+# Configuración de despliegue de Sistema A (Module_WFN-One) en Netlify.
+# pnpm se autodetecta por pnpm-lock.yaml. VITE_API_URL se define en
+# Site settings → Environment variables (NO aquí; es por-entorno).
+
+[build]
+  command = "pnpm build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# SPA fallback: Vue Router maneja el routing del lado del cliente, así que
+# cualquier ruta profunda (/profile, /vacation, ...) debe servir index.html en
+# vez de 404 al recargar o entrar directo.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
