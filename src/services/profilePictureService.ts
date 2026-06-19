@@ -1,192 +1,102 @@
-import { uploadData, getUrl, remove } from 'aws-amplify/storage';
-
 /**
- * Servicio para gestionar fotos de perfil usando S3
+ * Servicio de fotos de perfil — S3 vía el BFF (Sistema C).
+ *
+ * La versión Amplify subía a S3 con aws-amplify/storage; el stub intermedio
+ * guardaba un data URL en localStorage. Ahora el flujo es el patrón BFF:
+ *
+ *   1. El BFF firma una presigned URL (POST /storage { action:'getUploadUrl' }).
+ *   2. El navegador hace PUT del archivo DIRECTO a S3 con esa URL (axios crudo,
+ *      sin cookie ni base /api: va autorizado por la firma).
+ *   3. Para mostrar/leer, el BFF firma una GET URL (action:'get' | 'getByUser')
+ *      que se usa tal cual en <img src>.
+ *
+ * El bucket es privado; el BFF es el único que tiene credenciales AWS. La
+ * identidad es el `username` Cognito (la key vive en profile-pictures/<user>),
+ * así que el backend deriva la key de la sesión: un usuario solo escribe la
+ * suya. Las firmas exportadas no cambian (las vistas no se tocan).
  */
+import axios from 'axios'
+import { ApiFacade } from './base/ApiFacade'
 
 export interface ProfilePictureResult {
-    success: boolean;
-    url?: string;
-    error?: string;
+  success: boolean
+  url?: string
+  error?: string
 }
 
-// Clave para guardar la extensión de la foto en localStorage
-const PROFILE_PIC_EXT_KEY = 'profile_picture_ext';
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+const MAX_SIZE = 5 * 1024 * 1024
 
-/**
- * Sube una foto de perfil para el usuario actual
- * @param userId - ID del usuario
- * @param file - Archivo de imagen a subir
- */
+/** Sube la foto de perfil del usuario actual a S3 (presigned PUT). */
 export const uploadProfilePicture = async (
-    userId: string,
-    file: File
+  userId: string,
+  file: File,
 ): Promise<ProfilePictureResult> => {
-    try {
-        if (!userId) {
-            return {
-                success: false,
-                error: 'No se pudo obtener la identidad del usuario.',
-            };
-        }
-
-        // Validar tipo de archivo
-        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-        if (!allowedTypes.includes(file.type)) {
-            return {
-                success: false,
-                error: 'Tipo de archivo no permitido. Solo se permiten: JPG, PNG, GIF, WEBP',
-            };
-        }
-
-        // Validar tamaño (máximo 5MB)
-        const maxSize = 5 * 1024 * 1024;
-        if (file.size > maxSize) {
-            return {
-                success: false,
-                error: 'El archivo es demasiado grande. Máximo 5MB permitido.',
-            };
-        }
-
-        // Siempre usamos la misma extensión para sobrescribir
-        const fileExtension = file.name.split('.').pop()?.toLowerCase() || 'jpg';
-        const fileName = `profile-pictures/${userId}/avatar.${fileExtension}`;
-
-        // Subir archivo
-        await uploadData({
-            path: fileName,
-            data: file,
-            options: {
-                contentType: file.type,
-            },
-        }).result;
-
-        // Guardar la extensión en localStorage para recuperarla después
-        localStorage.setItem(PROFILE_PIC_EXT_KEY, fileExtension);
-
-        // Obtener URL de la imagen
-        const urlResult = await getUrl({
-            path: fileName,
-            options: {
-                expiresIn: 3600,
-            },
-        });
-
-        return {
-            success: true,
-            url: urlResult.url.toString(),
-        };
-    } catch (error) {
-        console.error('Error uploading profile picture:', error);
-        return {
-            success: false,
-            error: 'Error al subir la imagen. Por favor intenta de nuevo.',
-        };
+  if (!userId) {
+    return { success: false, error: 'No se pudo obtener la identidad del usuario.' }
+  }
+  if (!ALLOWED_TYPES.includes(file.type)) {
+    return {
+      success: false,
+      error: 'Tipo de archivo no permitido. Solo se permiten: JPG, PNG, GIF, WEBP',
     }
-};
-
-/**
- * Obtiene la URL de la foto de perfil del usuario actual
- * @param userId - ID del usuario
- */
-export const getProfilePictureUrl = async (userId: string): Promise<string | null> => {
-    try {
-        if (!userId) {
-            return null;
-        }
-
-        // Intentar obtener la extensión guardada en localStorage
-        const savedExt = localStorage.getItem(PROFILE_PIC_EXT_KEY);
-        const extensions = savedExt ? [savedExt] : ['jpg', 'png', 'jpeg', 'gif', 'webp'];
-
-        for (const ext of extensions) {
-            try {
-                const urlResult = await getUrl({
-                    path: `profile-pictures/${userId}/avatar.${ext}`,
-                    options: {
-                        expiresIn: 3600,
-                        validateObjectExistence: true,
-                    },
-                });
-                // Si funciona, guardar la extensión
-                localStorage.setItem(PROFILE_PIC_EXT_KEY, ext);
-                return urlResult.url.toString();
-            } catch {
-                // Continuar con la siguiente extensión
-            }
-        }
-
-        return null;
-    } catch {
-        return null;
+  }
+  if (file.size > MAX_SIZE) {
+    return {
+      success: false,
+      error: 'El archivo es demasiado grande. Máximo 5MB permitido.',
     }
-};
+  }
 
-/**
- * Elimina la foto de perfil del usuario
- * @param userId - ID del usuario
- */
+  // 1) Pedir la presigned PUT URL al BFF.
+  const presign = await ApiFacade.storage.postAction<{
+    uploadUrl: string
+    contentType: string
+  }>('getUploadUrl', { contentType: file.type })
+  if (!presign.success || !presign.data) {
+    return { success: false, error: presign.error ?? 'No se pudo iniciar la subida.' }
+  }
+
+  // 2) PUT directo a S3 (sin cookie ni headers del BFF: solo Content-Type, que
+  //    debe coincidir con el firmado). axios crudo, no la instancia `api`.
+  try {
+    await axios.put(presign.data.uploadUrl, file, {
+      headers: { 'Content-Type': file.type },
+    })
+  } catch (error) {
+    console.error('Error uploading to S3:', error)
+    return { success: false, error: 'Error al subir la imagen a S3.' }
+  }
+
+  // 3) Obtener la GET URL de visualización ya firmada.
+  const url = await getProfilePictureUrl(userId)
+  return { success: true, url: url ?? undefined }
+}
+
+/** GET URL firmada de la foto del usuario actual (null si no tiene). */
+export const getProfilePictureUrl = async (
+  userId: string,
+): Promise<string | null> => {
+  if (!userId) return null
+  const res = await ApiFacade.storage.postAction<{ url: string | null }>('get')
+  return res.success && res.data ? res.data.url : null
+}
+
+/** Elimina la foto de perfil del usuario actual. */
 export const deleteProfilePicture = async (userId: string): Promise<boolean> => {
-    try {
-        if (!userId) {
-            return false;
-        }
+  if (!userId) return false
+  const res = await ApiFacade.storage.postAction('delete')
+  return res.success
+}
 
-        // Obtener la extensión guardada
-        const savedExt = localStorage.getItem(PROFILE_PIC_EXT_KEY);
-        const extensions = savedExt ? [savedExt] : ['jpg', 'png', 'jpeg', 'gif', 'webp'];
-
-        for (const ext of extensions) {
-            try {
-                await remove({
-                    path: `profile-pictures/${userId}/avatar.${ext}`,
-                });
-                // Limpiar localStorage
-                localStorage.removeItem(PROFILE_PIC_EXT_KEY);
-                return true;
-            } catch {
-                // Continuar con la siguiente extensión
-            }
-        }
-
-        return true;
-    } catch (error) {
-        console.error('Error deleting profile picture:', error);
-        return false;
-    }
-};
-
-/**
- * Obtiene la URL de la foto de perfil de cualquier usuario (para admins)
- * No usa localStorage ya que puede ser para múltiples usuarios
- * @param userId - ID del usuario
- */
-export const getAnyUserProfilePictureUrl = async (userId: string): Promise<string | null> => {
-    try {
-        if (!userId) {
-            return null;
-        }
-
-        const extensions = ['jpg', 'png', 'jpeg', 'gif', 'webp'];
-
-        for (const ext of extensions) {
-            try {
-                const urlResult = await getUrl({
-                    path: `profile-pictures/${userId}/avatar.${ext}`,
-                    options: {
-                        expiresIn: 3600,
-                        validateObjectExistence: true,
-                    },
-                });
-                return urlResult.url.toString();
-            } catch {
-                // Continuar con la siguiente extensión
-            }
-        }
-
-        return null;
-    } catch {
-        return null;
-    }
-};
-
+/** GET URL firmada de la foto de cualquier usuario (para admins/managers). */
+export const getAnyUserProfilePictureUrl = async (
+  userId: string,
+): Promise<string | null> => {
+  if (!userId) return null
+  const res = await ApiFacade.storage.postAction<{ url: string | null }>(
+    'getByUser',
+    { username: userId },
+  )
+  return res.success && res.data ? res.data.url : null
+}

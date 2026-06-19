@@ -12,6 +12,14 @@ dist
 dist-ssr
 *.local
 
+# Env: se ignoran los locales/secretos, pero .env.example y .env.production SÍ se
+# versionan (VITE_API_URL es la URL pública del Lambda, no es secreta).
+.env
+.env.local
+.env.*.local
+.env.production
+.env.example
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -22,8 +30,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
-# amplify
-.amplify
-amplify_outputs*
-amplifyconfiguration*

@@ -1,15 +1,16 @@
 /**
- * Componentes UI reutilizables
- * Siguiendo el principio de Single Responsibility
+ * Componentes UI reutilizables (Vue SFC)
  */
 
-export { UserAvatar } from './UserAvatar';
-export { Button, type ButtonProps } from './Button';
-export { Card, type CardProps } from './Card';
-export { Modal, type ModalProps } from './Modal';
-export { Badge, type BadgeProps } from './Badge';
-export { Input, type InputProps } from './Input';
-export { Select, type SelectProps, type SelectOption } from './Select';
-export { Spinner, type SpinnerProps } from './Spinner';
-export { EmptyState, type EmptyStateProps } from './EmptyState';
-export { Alert, type AlertProps } from './Alert';
+export { default as UserAvatar } from './UserAvatar.vue'
+export { default as Button } from './Button.vue'
+export { default as Card } from './Card.vue'
+export { default as Modal } from './Modal.vue'
+export { default as Badge } from './Badge.vue'
+export { default as Input } from './Input.vue'
+export { default as Select } from './Select.vue'
+export { default as Spinner } from './Spinner.vue'
+export { default as EmptyState } from './EmptyState.vue'
+export { default as Alert } from './Alert.vue'
+
+export type { SelectOption } from './Select.vue'

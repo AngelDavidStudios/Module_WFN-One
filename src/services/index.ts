@@ -4,16 +4,17 @@
  */
 
 // Base
-export * from './base';
+export * from './base'
 
 // Servicios específicos
-export { userManagementApi, type CognitoUser } from './userManagementApi';
-export { organizationApi } from './organizationApi';
-export { vacationApi } from './vacationApi';
-export { auditApi } from './auditApi';
+export { userManagementApi, type CognitoUser } from './userManagementApi'
+export { organizationApi } from './organizationApi'
+export { vacationApi } from './vacationApi'
+export { auditApi } from './auditApi'
 export {
-    uploadProfilePicture,
-    getProfilePictureUrl,
-    deleteProfilePicture,
-    getAnyUserProfilePictureUrl,
-} from './profilePictureService';
+  uploadProfilePicture,
+  getProfilePictureUrl,
+  deleteProfilePicture,
+  getAnyUserProfilePictureUrl,
+  type ProfilePictureResult,
+} from './profilePictureService'
