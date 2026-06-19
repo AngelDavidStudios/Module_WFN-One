@@ -12,10 +12,13 @@ dist
 dist-ssr
 *.local
 
-# Env locales (el .env.example SÍ se versiona; VITE_API_URL se setea en Netlify)
+# Env: se ignoran los locales/secretos, pero .env.example y .env.production SÍ se
+# versionan (VITE_API_URL es la URL pública del Lambda, no es secreta).
 .env
-.env.*
-!.env.example
+.env.local
+.env.*.local
+.env.production
+.env.example
 
 # Editor directories and files
 .vscode/*
