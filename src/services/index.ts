@@ -11,6 +11,7 @@ export { userManagementApi, type CognitoUser } from './userManagementApi'
 export { organizationApi } from './organizationApi'
 export { vacationApi } from './vacationApi'
 export { auditApi } from './auditApi'
+export { messagesApi } from './messagesApi'
 export {
   uploadProfilePicture,
   getProfilePictureUrl,

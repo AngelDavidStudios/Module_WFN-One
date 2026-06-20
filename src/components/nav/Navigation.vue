@@ -14,6 +14,7 @@ import {
   ArrowRightOnRectangleIcon,
   UserGroupIcon,
   ComputerDesktopIcon,
+  LockClosedIcon,
 } from '@heroicons/vue/24/outline'
 import {
   HomeIcon as HomeIconSolid,
@@ -195,6 +196,12 @@ function onLogoutLeave(e: MouseEvent): void {
             :items="empleadoItems"
             :is-active-group="isEmpleadoGroupActive"
             :icon="UserGroupIcon"
+          />
+          <NavLink
+            to="/secure-report"
+            label="Reporte Seguro"
+            :is-active="isActive('/secure-report')"
+            :icon="LockClosedIcon"
           />
           <NavLink
             v-if="isSuperAdmin"

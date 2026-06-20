@@ -50,6 +50,14 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: true },
   },
   {
+    path: '/secure-report',
+    name: 'secure-report',
+    // Reporte confidencial cifrado con KMS (A → B). Cualquier usuario autenticado
+    // puede enviarlo; el remitente lo resuelve el BFF desde la sesión.
+    component: () => import('../views/SecureReportView.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/approvals',
     name: 'approvals',
     // Sin requiredRoles: cualquier usuario puede ser supervisor en el árbol

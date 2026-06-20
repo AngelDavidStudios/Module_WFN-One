@@ -12,6 +12,7 @@ import { HttpClient, createHttpClient } from './httpClient'
  *   organization   -> /organization
  *   vacation       -> /vacation   (también sirve los logs de auditoría)
  *   storage        -> /storage    (fotos de perfil; presigned URLs de S3)
+ *   messages       -> /messages   (reportes confidenciales cifrados con KMS, A → B)
  *
  * Estos paths son el contrato pendiente con el backend NestJS (último paso).
  */
@@ -19,6 +20,7 @@ const userManagementClient = createHttpClient({ basePath: '/users' })
 const organizationClient = createHttpClient({ basePath: '/organization' })
 const vacationClient = createHttpClient({ basePath: '/vacation' })
 const storageClient = createHttpClient({ basePath: '/storage' })
+const messagesClient = createHttpClient({ basePath: '/messages' })
 
 export const ApiFacade = {
   get userManagement(): HttpClient {
@@ -35,6 +37,10 @@ export const ApiFacade = {
 
   get storage(): HttpClient {
     return storageClient
+  },
+
+  get messages(): HttpClient {
+    return messagesClient
   },
 }
 
